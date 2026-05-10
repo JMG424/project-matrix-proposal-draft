@@ -418,15 +418,15 @@
       </header>
 
       <section class="hero">
-        <h2>Phase 2: make the system safer, clearer, and more useful.</h2>
-        <p>Phase 1 proved the agent layer can support Oscar, Tylor, and Abel. This next sprint focuses on the practical foundation: security, source of truth, workflow design, and a simple executive view of what is working.</p>
+        <h2>Phase 2: evolve what we learned into a safer operating layer.</h2>
+        <p>In Phase 1 we built an agent layer to support Oscar, Abel, and Tylor. In practice, that initial design was not ideally suited to how Abel and Oscar actually work day-to-day. Phase 2 evolves that agent layer so it becomes safer, more useful, and has deeper reach into the data that matters most to the organization.</p>
       </section>
 
       <h2 class="section-title"><span class="num">1</span>What this sprint focuses on</h2>
       <div class="grid-3">
         <article class="card">
           <h3>Security before scale</h3>
-          <p>Improve how access, credentials, monitoring, and change-control are handled before adding deeper integrations.</p>
+          <p>Improve access, credentials, monitoring, and change-control while staging NEMOClaw-style sandbox environments so Path agents can be tested safely before deeper integrations.</p>
         </article>
         <article class="card">
           <h3>Company source of truth</h3>
@@ -450,6 +450,7 @@
       <div class="grid-2">
         <article class="card">
           <h3>Oscar — Source of Truth + Matrix Command Layer</h3>
+          <p>The Oscar track builds out the Matrix system so Oscar can access the data he needs without becoming the routing point for every communication his team can handle.</p>
           <ul class="clean">
             <li>First company/entity map across Path and related ecosystem companies.</li>
             <li>Basic rules and guardrails for access, supplier confidentiality, and research-use-only positioning.</li>
@@ -476,57 +477,49 @@
 
     <section class="page">
       <h2 class="section-title"><span class="num">4</span>Abel — Start with the workflows that hurt</h2>
-      <div class="quote">For Abel, the first sprint should stay narrow: pick the workflows that are painful, data-rich, and safe to improve with drafts, alerts, and human approval.</div>
+      <div class="quote">For Abel, we start narrow: choose one or two painful workflows, build safely, and only expand once the pattern proves useful.</div>
       <div class="grid-2" style="margin-top:12px;">
         <article class="card">
-          <h3>Candidate Abel workflows</h3>
+          <h3>Focused starting point</h3>
           <ul class="clean">
-            <li><b>Packaging procurement trigger → Slack / PO draft:</b> turn reorder triggers into actionable procurement drafts.</li>
-            <li><b>Inventory reorder intelligence:</b> stockout risk, velocity, lead times, and recommended purchasing actions.</li>
-            <li><b>Provider 360 profile:</b> NPI, order history, support, relationship notes, and next best action.</li>
-            <li><b>Customer health score:</b> red/yellow/green churn risk with recommended retention actions.</li>
-            <li><b>Support intelligence:</b> ticket sentiment, topic, urgency, escalation, and suggested response.</li>
-            <li><b>Meeting → execution:</b> transcripts converted into decisions, owners, due dates, and project updates.</li>
+            <li><b>Pick 1–2 workflows:</b> likely inventory/procurement, support intelligence, or meeting-to-task execution.</li>
+            <li><b>Use drafts and alerts first:</b> the system recommends; people approve.</li>
+            <li><b>Build around real pain:</b> no broad automation menu until the first workflow is working.</li>
           </ul>
         </article>
         <article class="card">
-          <h3>Safe build pattern for any workflow</h3>
+          <h3>Safe build pattern</h3>
           <ul class="clean">
-            <li><b>Spec:</b> APIs, permissions, failure modes, approval rules.</li>
-            <li><b>Staging:</b> no production credentials, no unsafe write actions.</li>
-            <li><b>MVP:</b> limited production data with approval gates.</li>
-            <li><b>Production:</b> automated where safe, human approval where required.</li>
-            <li><b>Documentation:</b> capture the working pattern so Abel’s team can safely extend what proves useful.</li>
+            <li><b>Spec:</b> data sources, permissions, failure modes, approval rules.</li>
+            <li><b>Sandbox:</b> test in staging before production data or credentials.</li>
+            <li><b>MVP:</b> limited production use with monitoring and manual approval.</li>
+            <li><b>Extend:</b> document what works before expanding to the next workflow.</li>
           </ul>
         </article>
       </div>
 
-      <h2 class="section-title"><span class="num">5</span>Matrix dashboard</h2>
+      <h2 class="section-title"><span class="num">5</span>Matrix dashboard + agent interface</h2>
+      <p class="small-note">The dashboard and agent interface support Oscar in using AI to see the company’s operations clearly, on demand, without needing to chase every update through people and tools.</p>
       <div class="grid-3">
         <article class="card"><h3>Executive view</h3><p>Priorities, decisions, open loops, agent output, risks, and next actions across the operating system.</p></article>
         <article class="card"><h3>Sales + finance view</h3><p>Tylor pipeline, lifecycle segments, revenue brief, customer movement, and outreach status.</p></article>
         <article class="card"><h3>Operations view</h3><p>Abel workflows, procurement alerts, support signals, inventory risk, and implementation status.</p></article>
       </div>
-      <p class="small-note"><b>Deliberate constraint:</b> dashboard v1 is read-first. It gives visibility and review context. Production changes still go through staging, approval, and Alacrity One change-control.</p>
+      <p class="small-note"><b>Deliberate constraint:</b> dashboard v1 is read-first. It gives Oscar visibility and review context. Production changes still go through staging, approval, and Alacrity One change-control.</p>
 
       <h2 class="section-title"><span class="num">6</span>Working principles</h2>
       <div class="grid-3">
-        <article class="card"><h3>Read-only first</h3><p>Agents observe, summarize, draft, and recommend before they modify.</p></article>
-        <article class="card"><h3>Human approval</h3><p>Outbound, financial, customer-facing, regulatory, and production actions stay reviewed.</p></article>
-        <article class="card"><h3>No cross-contamination</h3><p>Finance, compliance, sales, supplier, and operations context stays scoped unless deliberately bridged.</p></article>
+        <article class="card"><h3>Read-only first</h3><p>The agents should observe, summarize, draft, and recommend before they are allowed to change anything.</p></article>
+        <article class="card"><h3>People approve sensitive actions</h3><p>Anything outbound, financial, customer-facing, regulatory, or production-related stays under human approval.</p></article>
+        <article class="card"><h3>Keep lanes clear</h3><p>Sales, finance, supplier, compliance, and operations context stay separate unless there is a clear reason to connect them.</p></article>
       </div>
 
+      <h2 class="section-title"><span class="num">7</span>Investment + target outcomes</h2>
       <section class="outcome-band">
         <div class="investment">
           <h3>Investment</h3>
-          <div class="price">$27,500</div>
-          <p>90-day Project Matrix Implementation Sprint · staged delivery · paid on milestone</p>
-          <div class="tranches">
-            <div class="tranche"><b>$6,875</b>Security review + staging plan + access controls</div>
-            <div class="tranche"><b>$6,875</b>Source-of-truth v1 + leader workflow design</div>
-            <div class="tranche"><b>$6,875</b>Selected MVPs + dashboard first draft</div>
-            <div class="tranche"><b>$6,875</b>Refinement + documentation + next roadmap</div>
-          </div>
+          <div class="price">TBD</div>
+          <p>90-day Project Matrix Phase 2 sprint · final scope and payment structure to be confirmed.</p>
         </div>
         <article class="card warning">
           <h3>Target outcomes by Day 90</h3>
@@ -534,32 +527,17 @@
             <li>Clearer security posture, access rules, and change-control process.</li>
             <li>First source-of-truth map for entities, systems, rules, and workflows.</li>
             <li>Tylor workflow improvements tested through drafts, briefs, or CRM hygiene recommendations.</li>
-            <li>1–3 Abel workflow candidates designed, prototyped, or moved toward production where safe.</li>
+            <li>1–2 Abel workflow candidates designed, prototyped, or moved toward production where safe.</li>
             <li>Dashboard first draft for Oscar’s operating visibility.</li>
             <li>Practical next-step roadmap based on what actually works.</li>
           </ul>
         </article>
       </section>
 
-      <h2 class="section-title"><span class="num">7</span>What Path provides</h2>
-      <div class="card">
-        <ul class="clean two-col-list">
-          <li>Weekly implementation time with each leader in scope.</li>
-          <li>Approved read-only system access on a documented schedule.</li>
-          <li>48-hour feedback on outputs, specs, and drafts.</li>
-          <li>One internal point of contact for scheduling and source materials.</li>
-          <li>Explicit approval before sensitive system changes or credentials.</li>
-          <li>Agreement that delivery is verified through useful working artifacts, not theoretical slide decks.</li>
-        </ul>
-      </div>
-
-      <div class="accept">
-        <div>
-          <b>To begin</b>
-          <p>Reply by text or email to authorize. First invoice of $6,875 follows authorization.</p>
-          <p class="small-note"><b>Security + liability note:</b> AI systems are powerful and still evolving. Alacrity One will continuously evaluate security options, welcome Path’s security input, and can coordinate independent third-party review at cost. Liability is limited to fees paid in the prior 3 months; this keeps risk bounded while both sides work together to maintain a safer environment.</p>
-        </div>
-        <div class="sig">Jason Galoob<br><span style="font-weight:650;color:#5f6b80;">Alacrity One</span></div>
+      <div class="card" style="margin-top:14px;">
+        <h3>Security + commitment</h3>
+        <p><em>AI is one of the most powerful technologies ever built — and it is still evolving. Alacrity One takes that seriously. Throughout this engagement we continuously evaluate enterprise security solutions as they emerge and assess whether they fit Path's environment. We welcome security input from your team and remain open to independent third-party security consultants at any stage. The goal is a system that gets more secure over time, not one that stands still.</em></p>
+        <p class="small-note"><em>Liability is limited to fees paid in the prior 3 months — not because we anticipate issues, but because responsible deployment of evolving technology requires both sides to acknowledge risk and work together to maintain a secure environment.</em></p>
       </div>
 
       <div class="footer">
