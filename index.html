@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Matrix — 90-Day Implementation Sprint</title>
+  <style>
+    :root {
+      --ink: #182033;
+      --muted: #5f6b80;
+      --soft: #eef2f7;
+      --paper: #fbfaf7;
+      --card: #ffffff;
+      --line: #d9e0ea;
+      --blue: #244b8f;
+      --blue2: #0f2f66;
+      --gold: #b8892d;
+      --green: #1d6b54;
+      --red: #8e2f2f;
+      --shadow: 0 18px 46px rgba(24, 32, 51, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      background: #e9edf3;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.45;
+    }
+
+    body { padding: 28px; }
+
+    .doc {
+      width: 8.5in;
+      min-height: 11in;
+      margin: 0 auto 28px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .page {
+      min-height: 11in;
+      padding: .58in .62in .5in;
+      position: relative;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.02;
+      letter-spacing: -.04em;
+      margin: 0 0 8px;
+      color: var(--blue2);
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .meta {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+      width: 235px;
+      font-size: 12px;
+    }
+
+    .meta div {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    .meta div:last-child { border-bottom: none; }
+    .meta b { color: var(--blue2); }
+    .meta span { color: var(--muted); }
+
+    .hero {
+      background: linear-gradient(135deg, #17376f 0%, #244b8f 64%, #305ca4 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 22px 24px;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -90px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.09);
+    }
+
+    .hero h2 {
+      font-size: 23px;
+      line-height: 1.12;
+      letter-spacing: -.025em;
+      margin: 0 0 10px;
+      max-width: 620px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      font-size: 14px;
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      max-width: 660px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 10px;
+      color: var(--blue2);
+      font-size: 17px;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    .section-title .num {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: var(--blue2);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 850;
+      flex: none;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 14px 15px;
+      break-inside: avoid;
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      color: var(--blue2);
+      letter-spacing: -.01em;
+    }
+
+    .card p, .card li {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    ul.clean {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+    }
+
+    ul.clean li {
+      position: relative;
+      padding-left: 15px;
+      margin: 5px 0;
+    }
+
+    ul.clean li:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .64em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 12px;
+      min-height: 132px;
+    }
+
+    .step strong {
+      display: block;
+      color: var(--gold);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 5px;
+    }
+
+    .step b {
+      display: block;
+      font-size: 13px;
+      color: var(--blue2);
+      margin-bottom: 6px;
+      line-height: 1.16;
+    }
+
+    .step span {
+      display: block;
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .outcome-band {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .quote {
+      border-left: 5px solid var(--gold);
+      background: #fff8ea;
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 750;
+      color: var(--blue2);
+      letter-spacing: -.015em;
+    }
+
+    .investment {
+      background: #101b31;
+      color: white;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .investment h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .price {
+      font-size: 35px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      color: #fff;
+    }
+
+    .investment p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+    }
+
+    .tranches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tranche {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 11px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .tranche b {
+      display: block;
+      color: white;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .footer {
+      position: absolute;
+      left: .62in;
+      right: .62in;
+      bottom: .28in;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #7a8495;
+      font-size: 10.5px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: white;
+      color: var(--blue2);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .warning {
+      border-color: #ead4ab;
+      background: #fff8ea;
+    }
+
+    .two-col-list {
+      columns: 2;
+      column-gap: 20px;
+      margin-top: 8px;
+    }
+
+    .small-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .accept {
+      border: 2px solid var(--blue2);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: white;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .accept b { color: var(--blue2); }
+    .accept p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
+    .sig {
+      text-align: right;
+      color: var(--blue2);
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    @page { size: letter; margin: 0; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .doc { width: 8.5in; min-height: 11in; box-shadow: none; margin: 0; }
+      .page { min-height: 11in; page-break-after: always; }
+      .page:last-child { page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="doc">
+    <section class="page">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">First Draft · Phase 2 Engagement Proposal</div>
+          <h1>Project Matrix<br>90-Day Implementation Sprint</h1>
+          <div class="subtitle">Path Peptides · Practical next steps for security, source of truth, and leader workflows</div>
+        </div>
+        <aside class="meta" aria-label="Proposal details">
+          <div><b>For</b><span>Oscar · Founder & CEO</span></div>
+          <div><b>From</b><span>Jason Galoob · Alacrity One</span></div>
+          <div><b>Date</b><span>May 2026</span></div>
+          <div><b>Term</b><span>90 days from authorization</span></div>
+          <div><b>Email</b><span>jason@meta57.xyz</span></div>
+        </aside>
+      </header>
+
+      <section class="hero">
+        <h2>Phase 2: make the system safer, clearer, and more useful.</h2>
+        <p>Phase 1 proved the agent layer can support Oscar, Tylor, and Abel. This next sprint focuses on the practical foundation: security, source of truth, workflow design, and a simple executive view of what is working.</p>
+      </section>
+
+      <h2 class="section-title"><span class="num">1</span>What this sprint focuses on</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Security before scale</h3>
+          <p>Improve how access, credentials, monitoring, and change-control are handled before adding deeper integrations.</p>
+        </article>
+        <article class="card">
+          <h3>Company source of truth</h3>
+          <p>Begin organizing entities, people, systems, rules, decisions, and context into a cleaner shared operating map.</p>
+        </article>
+        <article class="card">
+          <h3>Workflow integration</h3>
+          <p>Identify the workflows where agents can safely draft, summarize, monitor, and support the team.</p>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">2</span>The 90-day architecture</h2>
+      <div class="timeline">
+        <div class="step"><strong>Weeks 1–2</strong><b>Secure + clarify</b><span>Review access, staging, credentials, permissions, source inventory, and Abel workflow candidates.</span></div>
+        <div class="step"><strong>Weeks 3–6</strong><b>Map + design</b><span>Build the first source-of-truth map, define leader workflows, and scope safe MVPs.</span></div>
+        <div class="step"><strong>Weeks 7–10</strong><b>Build MVPs</b><span>Develop selected workflow prototypes, dashboard v1, and reporting drafts with approval gates.</span></div>
+        <div class="step"><strong>Weeks 11–13</strong><b>Refine + decide</b><span>Test, adjust, document, and agree on the next layer based on what actually proves useful.</span></div>
+      </div>
+
+      <h2 class="section-title"><span class="num">3</span>Core workstreams</h2>
+      <div class="grid-2">
+        <article class="card">
+          <h3>Oscar — Source of Truth + Matrix Command Layer</h3>
+          <ul class="clean">
+            <li>First company/entity map across Path and related ecosystem companies.</li>
+            <li>Basic rules and guardrails for access, supplier confidentiality, and research-use-only positioning.</li>
+            <li>Initial compliance and competitive-intelligence monitoring concepts.</li>
+            <li>Simple weekly executive view of priorities, decisions, risks, and open loops.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Tylor — Sales, Finance + CRM Intelligence</h3>
+          <ul class="clean">
+            <li>Inside-sales workflow audit and CRM data inventory.</li>
+            <li>Lifecycle stages: approved, never purchased, first purchase, lapsed, lost, top-volume.</li>
+            <li>CRM hygiene recommendations and draft outreach sequences with human approval before send.</li>
+            <li>Revenue/pipeline brief concept for cash position, collections, commissions, and customer activity.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="footer">
+        <span>Project Matrix · 90-Day Implementation Sprint</span>
+        <span>Page 1 of 2</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="section-title"><span class="num">4</span>Abel — Start with the workflows that hurt</h2>
+      <div class="quote">For Abel, the first sprint should stay narrow: pick the workflows that are painful, data-rich, and safe to improve with drafts, alerts, and human approval.</div>
+      <div class="grid-2" style="margin-top:12px;">
+        <article class="card">
+          <h3>Candidate Abel workflows</h3>
+          <ul class="clean">
+            <li><b>Packaging procurement trigger → Slack / PO draft:</b> turn reorder triggers into actionable procurement drafts.</li>
+            <li><b>Inventory reorder intelligence:</b> stockout risk, velocity, lead times, and recommended purchasing actions.</li>
+            <li><b>Provider 360 profile:</b> NPI, order history, support, relationship notes, and next best action.</li>
+            <li><b>Customer health score:</b> red/yellow/green churn risk with recommended retention actions.</li>
+            <li><b>Support intelligence:</b> ticket sentiment, topic, urgency, escalation, and suggested response.</li>
+            <li><b>Meeting → execution:</b> transcripts converted into decisions, owners, due dates, and project updates.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Safe build pattern for any workflow</h3>
+          <ul class="clean">
+            <li><b>Spec:</b> APIs, permissions, failure modes, approval rules.</li>
+            <li><b>Staging:</b> no production credentials, no unsafe write actions.</li>
+            <li><b>MVP:</b> limited production data with approval gates.</li>
+            <li><b>Production:</b> automated where safe, human approval where required.</li>
+            <li><b>Documentation:</b> capture the working pattern so Abel’s team can safely extend what proves useful.</li>
+          </ul>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">5</span>Matrix dashboard</h2>
+      <div class="grid-3">
+        <article class="card"><h3>Executive view</h3><p>Priorities, decisions, open loops, agent output, risks, and next actions across the operating system.</p></article>
+        <article class="card"><h3>Sales + finance view</h3><p>Tylor pipeline, lifecycle segments, revenue brief, customer movement, and outreach status.</p></article>
+        <article class="card"><h3>Operations view</h3><p>Abel workflows, procurement alerts, support signals, inventory risk, and implementation status.</p></article>
+      </div>
+      <p class="small-note"><b>Deliberate constraint:</b> dashboard v1 is read-first. It gives visibility and review context. Production changes still go through staging, approval, and Alacrity One change-control.</p>
+
+      <h2 class="section-title"><span class="num">6</span>Working principles</h2>
+      <div class="grid-3">
+        <article class="card"><h3>Read-only first</h3><p>Agents observe, summarize, draft, and recommend before they modify.</p></article>
+        <article class="card"><h3>Human approval</h3><p>Outbound, financial, customer-facing, regulatory, and production actions stay reviewed.</p></article>
+        <article class="card"><h3>No cross-contamination</h3><p>Finance, compliance, sales, supplier, and operations context stays scoped unless deliberately bridged.</p></article>
+      </div>
+
+      <section class="outcome-band">
+        <div class="investment">
+          <h3>Investment</h3>
+          <div class="price">$27,500</div>
+          <p>90-day Project Matrix Implementation Sprint · staged delivery · paid on milestone</p>
+          <div class="tranches">
+            <div class="tranche"><b>$6,875</b>Security review + staging plan + access controls</div>
+            <div class="tranche"><b>$6,875</b>Source-of-truth v1 + leader workflow design</div>
+            <div class="tranche"><b>$6,875</b>Selected MVPs + dashboard first draft</div>
+            <div class="tranche"><b>$6,875</b>Refinement + documentation + next roadmap</div>
+          </div>
+        </div>
+        <article class="card warning">
+          <h3>Target outcomes by Day 90</h3>
+          <ul class="clean">
+            <li>Clearer security posture, access rules, and change-control process.</li>
+            <li>First source-of-truth map for entities, systems, rules, and workflows.</li>
+            <li>Tylor workflow improvements tested through drafts, briefs, or CRM hygiene recommendations.</li>
+            <li>1–3 Abel workflow candidates designed, prototyped, or moved toward production where safe.</li>
+            <li>Dashboard first draft for Oscar’s operating visibility.</li>
+            <li>Practical next-step roadmap based on what actually works.</li>
+          </ul>
+        </article>
+      </section>
+
+      <h2 class="section-title"><span class="num">7</span>What Path provides</h2>
+      <div class="card">
+        <ul class="clean two-col-list">
+          <li>Weekly implementation time with each leader in scope.</li>
+          <li>Approved read-only system access on a documented schedule.</li>
+          <li>48-hour feedback on outputs, specs, and drafts.</li>
+          <li>One internal point of contact for scheduling and source materials.</li>
+          <li>Explicit approval before sensitive system changes or credentials.</li>
+          <li>Agreement that delivery is verified through useful working artifacts, not theoretical slide decks.</li>
+        </ul>
+      </div>
+
+      <div class="accept">
+        <div>
+          <b>To begin</b>
+          <p>Reply by text or email to authorize. First invoice of $6,875 follows authorization.</p>
+          <p class="small-note"><b>Security + liability note:</b> AI systems are powerful and still evolving. Alacrity One will continuously evaluate security options, welcome Path’s security input, and can coordinate independent third-party review at cost. Liability is limited to fees paid in the prior 3 months; this keeps risk bounded while both sides work together to maintain a safer environment.</p>
+        </div>
+        <div class="sig">Jason Galoob<br><span style="font-weight:650;color:#5f6b80;">Alacrity One</span></div>
+      </div>
+
+      <div class="footer">
+        <span>jason@meta57.xyz · Alacrity One</span>
+        <span>Page 2 of 2</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
