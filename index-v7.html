@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Path — Project Matrix Implementation Sprint</title>
+  <style>
+    :root {
+      --ink: #12202f;
+      --muted: #5f6f7f;
+      --line: #dbe5ed;
+      --bg: #f5f8fb;
+      --card: #ffffff;
+      --navy: #0d253f;
+      --blue: #2f80ed;
+      --cyan: #38bdf8;
+      --green: #18a058;
+      --amber: #f59e0b;
+      --soft-blue: #eaf4ff;
+      --soft-green: #eaf8f0;
+      --soft-amber: #fff7e6;
+      --shadow: 0 18px 45px rgba(13, 37, 63, 0.11);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.36;
+    }
+
+    .page {
+      width: 8.5in;
+      min-height: 11in;
+      margin: 28px auto;
+      padding: 0.42in;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 10px;
+      background: linear-gradient(90deg, var(--navy), var(--blue), var(--cyan));
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: start;
+      margin-top: 6px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 800;
+      color: var(--blue);
+      font-size: 10px;
+      margin-bottom: 7px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.02;
+      letter-spacing: -0.045em;
+      color: var(--navy);
+      max-width: 620px;
+    }
+
+    .subhead {
+      margin: 11px 0 0;
+      font-size: 14.5px;
+      color: var(--muted);
+      max-width: 660px;
+    }
+
+    .meta {
+      width: 210px;
+      background: #f8fbfe;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px;
+      font-size: 11.5px;
+    }
+
+    .meta div { margin-bottom: 8px; }
+    .meta div:last-child { margin-bottom: 0; }
+    .label { color: var(--muted); font-weight: 800; font-size: 9.5px; text-transform: uppercase; letter-spacing: .08em; }
+    .value { color: var(--ink); font-weight: 850; margin-top: 2px; }
+
+    .hero {
+      margin: 18px 0;
+      padding: 20px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #0d253f, #144a7a 58%, #2474b7);
+      color: white;
+      display: grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .hero h2 { margin: 0 0 8px; font-size: 22px; letter-spacing: -0.03em; }
+    .hero p { margin: 0; color: rgba(255,255,255,.86); font-size: 14px; }
+
+    .hero-card {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 18px;
+      padding: 15px;
+    }
+
+    .hero-card strong { display: block; font-size: 29px; line-height: 1; margin-bottom: 6px; }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px;
+      background: #fff;
+    }
+
+    .card h3, .section h2 { margin: 0; color: var(--navy); letter-spacing: -0.025em; }
+    .card h3 { font-size: 14px; margin-bottom: 7px; }
+    .card p { margin: 0; color: var(--muted); font-size: 11.8px; }
+
+    .section { margin-top: 18px; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .section-title h2 { font-size: 17px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--soft-blue);
+      color: #155b9f;
+      font-weight: 850;
+      font-size: 10.5px;
+    }
+
+    .timeline { display: grid; grid-template-columns: .78fr 1.02fr 1.3fr .9fr; gap: 9px; }
+
+    .phase {
+      border-radius: 17px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fff, #f9fbfd);
+      min-height: 130px;
+    }
+
+    .phase .time {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--blue);
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    .phase h3 { margin: 0 0 7px; font-size: 13px; line-height: 1.18; color: var(--navy); }
+    .phase p { margin: 0; color: var(--muted); font-size: 11.2px; }
+
+    ul { margin: 7px 0 0; padding-left: 17px; color: var(--muted); font-size: 11.5px; }
+    li { margin-bottom: 4px; }
+
+    .highlight { background: var(--soft-green); border-color: #c8ead5; }
+    .warning { background: var(--soft-amber); border-color: #ffe0a3; }
+
+    .quote {
+      border-left: 5px solid var(--blue);
+      background: #f6faff;
+      padding: 13px 15px;
+      border-radius: 0 16px 16px 0;
+      font-size: 13.5px;
+      color: var(--navy);
+      font-weight: 750;
+    }
+
+    .investment {
+      border-radius: 20px;
+      padding: 16px;
+      background: #0d253f;
+      color: white;
+    }
+    .investment .amount { font-size: 25px; font-weight: 950; letter-spacing: -0.04em; margin: 5px 0; }
+    .investment p { margin: 0; color: rgba(255,255,255,.78); font-size: 12px; }
+
+    .footer-note {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 10.5px;
+    }
+
+    @media print {
+      body { background: white; }
+      .page { margin: 0; box-shadow: none; page-break-after: auto; }
+    }
+
+    @media screen and (max-width: 900px) {
+      .page { width: calc(100vw - 22px); min-height: auto; padding: 24px; margin: 11px; }
+      header, .hero, .grid-3, .grid-2, .timeline { grid-template-columns: 1fr; }
+      .meta { width: 100%; }
+      h1 { font-size: 29px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div>
+        <div class="eyebrow">Client-Facing Proposal</div>
+        <h1>Path — 90-Day Project Matrix Implementation Sprint</h1>
+        <p class="subhead">A focused sprint to strengthen Path’s AI foundation, create a reliable company source of truth, and give the leadership team cleaner access to operating intelligence.</p>
+      </div>
+      <aside class="meta">
+        <div><div class="label">Prepared for</div><div class="value">Oscar / Path Leadership</div></div>
+        <div><div class="label">Prepared by</div><div class="value">Jason Galoob</div></div>
+        <div><div class="label">Term</div><div class="value">90 days</div></div>
+        <div><div class="label">Investment</div><div class="value">To be discussed</div></div>
+      </aside>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h2>The next step is not simply “more agents.”</h2>
+        <p>The next step is a clean implementation sprint: harden the foundation, organize the company source of truth, improve the current agent workflows, and give Tylor and Abel seamless access to Matrix-level context around the priorities that surface in their 1:1s.</p>
+      </div>
+      <div class="hero-card">
+        <strong>90</strong>
+        <span>days to reduce ambiguity before it becomes operational drag.</span>
+      </div>
+    </section>
+
+    <section class="grid-3">
+      <div class="card">
+        <h3>1. Safer AI Foundation</h3>
+        <p>Credential review, access control, permissions, read-only-first rules, and human approval for sensitive actions.</p>
+      </div>
+      <div class="card">
+        <h3>2. Company Source of Truth</h3>
+        <p>Turn scattered company context, decisions, workflows, and open loops into a usable internal intelligence layer.</p>
+      </div>
+      <div class="card">
+        <h3>3. Leader-Level Utility</h3>
+        <p>Oscar first, then flexible Matrix-enabled work with Tylor and Abel based on what actually matters in their 1:1s.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Proposed Sprint Structure</h2>
+        <span class="pill">Read-only first · Approval-gated</span>
+      </div>
+      <div class="timeline">
+        <div class="phase">
+          <div class="time">Week 1</div>
+          <h3>Security + Access Control</h3>
+          <p>Make the foundation safe before expanding data access or automation.</p>
+          <ul>
+            <li>Credential and access audit</li>
+            <li>Permission map</li>
+            <li>Safe integration checklist</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="time">Weeks 2–4</div>
+          <h3>Oscar Source of Truth</h3>
+          <p>Turn Oscar’s company context into a usable map for the rest of the system.</p>
+          <ul>
+            <li>Company/entity map</li>
+            <li>Decision log format</li>
+            <li>Executive brief rhythm</li>
+          </ul>
+        </div>
+        <div class="phase highlight">
+          <div class="time">Weeks 5–10</div>
+          <h3>Tylor + Abel Matrix Access</h3>
+          <p>Use 1:1s to identify priorities, then give each leader relevant Matrix-level context in a clean, professional way.</p>
+          <ul>
+            <li>Working-session summaries</li>
+            <li>Role-specific access plan</li>
+            <li>Briefs, maps, specs, and next actions</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="time">Weeks 11–13</div>
+          <h3>Consolidation + Roadmap</h3>
+          <p>Bring the workstreams together and turn what was learned into the next Matrix build sequence.</p>
+          <ul>
+            <li>Source-of-truth v2</li>
+            <li>Leadership rhythm</li>
+            <li>Next 90-day roadmap</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card">
+        <h3>What the sprint includes</h3>
+        <ul>
+          <li>Security hardening and access planning.</li>
+          <li>Source-of-truth buildout.</li>
+          <li>Focused work with Oscar, then flexible Matrix-enabled sessions with Tylor and Abel.</li>
+          <li>Decision logs, recaps, workflow maps, and implementation priorities.</li>
+          <li>Selected Matrix buildout tied to real business priorities.</li>
+        </ul>
+      </div>
+      <div class="card warning">
+        <h3>Scope boundaries</h3>
+        <ul>
+          <li>Agents begin read-only: summarize, draft, recommend, and prepare.</li>
+          <li>Sensitive finance, customer-facing, support, compliance, or production actions require human approval.</li>
+          <li>No vague “AI help” bucket without owner, workflow, source system, and business outcome.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section grid-2">
+      <div class="card highlight">
+        <h3>Expected Day 90 outcomes</h3>
+        <ul>
+          <li>Safer AI operating foundation.</li>
+          <li>Company source-of-truth v2.</li>
+          <li>Cleaner leadership operating rhythm.</li>
+          <li>Matrix working views for selected priorities.</li>
+          <li>Practical next-phase Matrix roadmap.</li>
+        </ul>
+      </div>
+      <div class="investment">
+        <div class="label" style="color:rgba(255,255,255,.68)">Investment</div>
+        <div class="amount">To be discussed</div>
+        <p>Final investment and payment structure will be aligned after confirming scope, start date, access requirements, and the level of implementation support needed during the sprint.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="quote">The win is not that Path has more agents. The win is that Path has a safer AI foundation, a real company source of truth, cleaner leader workflows, and a practical Matrix roadmap based on actual business value.</div>
+    </section>
+
+    <div class="footer-note">
+      <span>Path — Project Matrix Implementation Sprint</span>
+      <span>Prepared by Jason Galoob</span>
+    </div>
+  </main>
+</body>
+</html>
