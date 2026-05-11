@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Matrix Phase 2 Proposal</title>
+  <style>
+    :root {
+      --ink: #182033;
+      --muted: #5f6b80;
+      --paper: #fbfaf7;
+      --card: #ffffff;
+      --line: #d9e0ea;
+      --blue: #244b8f;
+      --blue2: #0f2f66;
+      --gold: #b8892d;
+      --green: #1d6b54;
+      --red: #8e2f2f;
+      --shadow: 0 18px 46px rgba(24, 32, 51, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      background: #e9edf3;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      line-height: 1.38;
+    }
+
+    body { padding: 28px; }
+
+    .doc {
+      width: 8.5in;
+      min-height: 11in;
+      margin: 0 auto 28px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .page {
+      min-height: 11in;
+      padding: .54in .6in .5in;
+      position: relative;
+      page-break-after: always;
+    }
+
+    .page:last-child { page-break-after: auto; }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 35px;
+      line-height: 1.02;
+      letter-spacing: -.045em;
+      margin: 0 0 8px;
+      color: var(--blue2);
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 650;
+      max-width: 500px;
+    }
+
+    .meta {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 13px 15px;
+      width: 238px;
+      font-size: 12px;
+    }
+
+    .meta div {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    .meta div:last-child { border-bottom: none; }
+    .meta b { color: var(--blue2); }
+    .meta span { color: var(--muted); }
+
+    .hero {
+      background: linear-gradient(135deg, #17376f 0%, #244b8f 64%, #305ca4 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero:after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -90px;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.09);
+    }
+
+    .hero h2 {
+      font-size: 23px;
+      line-height: 1.12;
+      letter-spacing: -.03em;
+      margin: 0 0 8px;
+      max-width: 650px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      font-size: 13.4px;
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      max-width: 675px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 0 0 13px;
+    }
+
+    .decision {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 11px;
+      min-height: 72px;
+    }
+
+    .decision b {
+      display: block;
+      color: var(--blue2);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .decision span {
+      display: block;
+      color: var(--muted);
+      font-size: 11.4px;
+      line-height: 1.32;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0 8px;
+      color: var(--blue2);
+      font-size: 16.5px;
+      line-height: 1.1;
+      letter-spacing: -.02em;
+    }
+
+    .section-title .num {
+      width: 27px;
+      height: 27px;
+      border-radius: 9px;
+      background: var(--blue2);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 850;
+      flex: none;
+    }
+
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 13px;
+      break-inside: avoid;
+    }
+
+    .card h3 {
+      margin: 0 0 5px;
+      font-size: 13.2px;
+      color: var(--blue2);
+      letter-spacing: -.01em;
+    }
+
+    .card p, .card li {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    ul.clean {
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0;
+    }
+
+    ul.clean li {
+      position: relative;
+      padding-left: 14px;
+      margin: 4px 0;
+    }
+
+    ul.clean li:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .62em;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 7px;
+    }
+
+    .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 10px;
+      min-height: 128px;
+    }
+
+    .step strong {
+      display: block;
+      color: var(--gold);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px;
+    }
+
+    .step b {
+      display: block;
+      font-size: 12.2px;
+      color: var(--blue2);
+      margin-bottom: 5px;
+      line-height: 1.15;
+    }
+
+    .step span {
+      display: block;
+      font-size: 10.8px;
+      color: var(--muted);
+      line-height: 1.32;
+    }
+
+    .small-note {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 8px 0 0;
+    }
+
+    .quote {
+      border-left: 5px solid var(--gold);
+      background: #fff8ea;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 750;
+      color: var(--blue2);
+      letter-spacing: -.015em;
+      margin-top: 12px;
+    }
+
+    .outcome-band {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .investment {
+      background: #101b31;
+      color: white;
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .investment h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .price {
+      font-size: 33px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      color: #fff;
+    }
+
+    .investment p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,.78);
+      font-size: 11.5px;
+    }
+
+    .tranches {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .tranche {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 13px;
+      padding: 8px;
+      font-size: 10.8px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .tranche b {
+      display: block;
+      color: white;
+      font-size: 12.4px;
+      margin-bottom: 2px;
+    }
+
+    .warning {
+      border-color: #ead4ab;
+      background: #fff8ea;
+    }
+
+    .next-step {
+      border: 2px solid var(--blue2);
+      border-radius: 18px;
+      padding: 13px 15px;
+      background: white;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .next-step b { color: var(--blue2); }
+    .next-step p { margin: 2px 0 0; color: var(--muted); font-size: 11.7px; }
+
+    .sig {
+      text-align: right;
+      color: var(--blue2);
+      font-weight: 850;
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    .footer {
+      position: absolute;
+      left: .6in;
+      right: .6in;
+      bottom: .28in;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #7a8495;
+      font-size: 10.5px;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+
+    @page { size: letter; margin: 0; }
+
+    @media screen and (max-width: 860px) {
+      body { padding: 0; background: var(--paper); }
+      .doc { width: 100%; min-height: 0; margin: 0; box-shadow: none; overflow: visible; }
+      .page { min-height: 0; padding: 22px 16px 28px; page-break-after: auto; }
+      .topbar { grid-template-columns: 1fr; gap: 14px; margin-bottom: 16px; }
+      h1 { font-size: clamp(34px, 12vw, 52px); }
+      .subtitle { font-size: 16px; }
+      .subtitle br { display: none; }
+      .meta { width: 100%; border-radius: 16px; }
+      .meta div { grid-template-columns: 70px 1fr; }
+      .hero { border-radius: 20px; padding: 20px; }
+      .hero h2 { font-size: 24px; }
+      .hero p { font-size: 15px; }
+      .grid-2, .grid-3, .timeline, .decision-strip, .outcome-band, .tranches, .next-step { grid-template-columns: 1fr; }
+      .card, .step, .decision { padding: 16px; border-radius: 16px; min-height: 0; }
+      .card h3 { font-size: 16px; }
+      .card p, .card li, .step span, .decision span, .next-step p, .investment p { font-size: 14px; }
+      .step b, .decision b { font-size: 15px; }
+      .section-title { align-items: flex-start; margin-top: 24px; font-size: 21px; }
+      .footer { position: static; margin-top: 24px; left: auto; right: auto; bottom: auto; }
+      .sig { text-align: left; white-space: normal; }
+    }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .doc { width: 8.5in; min-height: 11in; box-shadow: none; margin: 0; }
+      .page { min-height: 11in; page-break-after: always; }
+      .page:last-child { page-break-after: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="doc">
+    <section class="page">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Engagement Proposal · Phase 2</div>
+          <h1>Matrix</h1>
+          <div class="subtitle">A 90-day sprint to turn Path’s agent foundation into a secure operating intelligence layer for Oscar, Tylor, and Abel.</div>
+        </div>
+        <aside class="meta" aria-label="Proposal details">
+          <div><b>For</b><span>Oscar · Founder & CEO</span></div>
+          <div><b>From</b><span>Jason Galoob · Alacrity One</span></div>
+          <div><b>Date</b><span>May 2026</span></div>
+          <div><b>Term</b><span>90 days from authorization</span></div>
+          <div><b>Decision</b><span>Approve sprint + start date</span></div>
+        </aside>
+      </header>
+
+      <section class="hero">
+        <h2>Phase 2: from agents that brief to an operating layer the business can trust.</h2>
+        <p>Phase 1 put agent machines, memory, Telegram workflows, and observability in motion. Phase 2 hardens that foundation and connects it to Path’s real operating needs: leadership visibility, source of truth, workflow intelligence, safer execution, and a practical Matrix roadmap.</p>
+      </section>
+
+      <section class="decision-strip" aria-label="Decision summary">
+        <div class="decision"><b>Objective</b><span>Make Matrix useful, safe, and tied to Path’s highest-value workflows.</span></div>
+        <div class="decision"><b>Focus</b><span>Oscar first, then Tylor revenue/CRM, then Abel operations.</span></div>
+        <div class="decision"><b>Investment</b><span>$27,500 over 90 days; final start date confirmed Monday.</span></div>
+        <div class="decision"><b>Guardrail</b><span>Read-only first; human approval for sensitive actions.</span></div>
+      </section>
+
+      <h2 class="section-title"><span class="num">1</span>Why now</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Path is scaling</h3>
+          <p>Path is operating at meaningful monthly revenue, Everest is going live, and the company map now spans multiple connected entities, leaders, tools, and operating rhythms.</p>
+        </article>
+        <article class="card">
+          <h3>The complexity is real</h3>
+          <p>Regulatory movement, customer lifecycle, finance, CRM, procurement, support, and leadership context cannot stay scattered if the business keeps accelerating.</p>
+        </article>
+        <article class="card">
+          <h3>The foundation exists</h3>
+          <p>The first agent layer is already running. The next step is not “more bots.” It is a controlled sprint that makes the system safer and more operational.</p>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">2</span>Already running</h2>
+      <div class="grid-2">
+        <article class="card">
+          <ul class="clean">
+            <li>Three agent machines with chief-of-staff, security, and systems capabilities.</li>
+            <li>Continuous workspace indexing and memory across the environment.</li>
+            <li>Fleet observability and diagnostics on a dedicated host.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <ul class="clean">
+            <li>Telegram channels, scheduled briefs, and early operating rhythms.</li>
+            <li>Fleet control dashboard in development.</li>
+            <li>Clear path toward leader-specific workflows and dashboard visibility.</li>
+          </ul>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">3</span>The 90-day architecture</h2>
+      <div class="timeline">
+        <div class="step"><strong>Weeks 1–2</strong><b>Secure the foundation</b><span>Staging environment, credential controls, permission tiers, prompt-injection testing, kill switch, change-control rules, and weekly 1:1 rhythm.</span></div>
+        <div class="step"><strong>Weeks 3–6</strong><b>Oscar command layer</b><span>Company source of truth, priority/risk map, regulatory and competitor intelligence, entity context, and daily dashboard visibility for Oscar.</span></div>
+        <div class="step"><strong>Weeks 7–10</strong><b>Tylor + Abel workflows</b><span>Tylor CRM hygiene, outreach drafts, revenue brief. Abel workflow #1 with approval gates; packaging/procurement or ops routing based on priority.</span></div>
+        <div class="step"><strong>Weeks 11–13</strong><b>Lock the roadmap</b><span>Tighten what works, document what does not, formalize leadership rhythm, and deliver the next 90-day Matrix build sequence.</span></div>
+      </div>
+
+      <div class="quote">The win is not “Path has more agents.” The win is that Path has a safer AI foundation, a real company source of truth, better leader workflows, and a practical Matrix roadmap based on business value.</div>
+
+      <div class="footer">
+        <span>Matrix · Phase 2 Proposal</span>
+        <span>Page 1 of 2</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="section-title"><span class="num">4</span>Core workstreams</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Oscar — command + source of truth</h3>
+          <p>Priorities, decisions, risks, open loops, regulatory movement, competitors, entity map, team visibility, and the executive intelligence rhythm.</p>
+        </article>
+        <article class="card">
+          <h3>Tylor — revenue, finance + CRM</h3>
+          <p>CRM hygiene, reviewed outreach drafts, daily revenue brief, customer lifecycle intelligence, commissions/cash visibility, and approved workflow specs.</p>
+        </article>
+        <article class="card">
+          <h3>Abel — operations + systems</h3>
+          <p>One high-leverage ops workflow shipped with approval gates: packaging procurement, Ship Day routing, support triage, onboarding surveys, or task extraction.</p>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">5</span>Development process</h2>
+      <div class="grid-3">
+        <article class="card">
+          <h3>Spec → staging → MVP → production</h3>
+          <p>Define the workflow, test safely, ship a narrow working version, then harden only what proves useful. No vague automation bucket.</p>
+        </article>
+        <article class="card">
+          <h3>Weekly leader 1:1s</h3>
+          <p>Weekly sessions with Oscar, Tylor, and Abel surface bottlenecks, review what agents are seeing, and choose the highest-value improvements.</p>
+        </article>
+        <article class="card">
+          <h3>Read-only first</h3>
+          <p>Agents can summarize, draft, recommend, and prepare. Sensitive finance, customer, compliance, or production actions stay human-approved.</p>
+        </article>
+      </div>
+
+      <h2 class="section-title"><span class="num">6</span>Investment</h2>
+      <section class="outcome-band">
+        <div class="investment">
+          <h3>90-Day Matrix Implementation Sprint</h3>
+          <div class="price">$27,500</div>
+          <p>Includes security hardening, source-of-truth buildout, leader workflows, weekly implementation rhythm, dashboard visibility, selected workflow MVPs, and next-phase roadmap.</p>
+          <div class="tranches">
+            <div class="tranche"><b>$10,000</b>to begin</div>
+            <div class="tranche"><b>$8,750</b>Day 30</div>
+            <div class="tranche"><b>$8,750</b>Day 60</div>
+          </div>
+        </div>
+        <article class="card warning">
+          <h3>Target outcomes by Day 90</h3>
+          <ul class="clean">
+            <li>Security, permissioning, staging, change-control, and kill-switch process in place.</li>
+            <li>Matrix source of truth and Oscar command layer live for daily use.</li>
+            <li>Tylor revenue/CRM workflow live with reviewed drafts and reporting rhythm.</li>
+            <li>One Abel operations workflow shipped with approval gates.</li>
+            <li>Next 90-day Matrix roadmap based on observed business value.</li>
+          </ul>
+        </article>
+      </section>
+
+      <h2 class="section-title"><span class="num">7</span>Decision requested Monday</h2>
+      <div class="grid-2">
+        <article class="card">
+          <h3>Approve the sprint</h3>
+          <ul class="clean">
+            <li>Confirm the $27,500 / 90-day implementation sprint.</li>
+            <li>Confirm Oscar, Tylor, and Abel as the first three workstreams.</li>
+            <li>Confirm the weekly 1:1 operating rhythm.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Authorize Week 1</h3>
+          <ul class="clean">
+            <li>Name the internal owner for access/security approvals.</li>
+            <li>Identify the first source materials and systems to organize.</li>
+            <li>Set the Week 1 start date and first review checkpoint.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="card" style="margin-top:12px;">
+        <h3>Security + commitment</h3>
+        <p><em>Default rule: read-only first. Agents can organize, summarize, draft, recommend, and prepare. Sensitive financial, customer-facing, compliance, or production actions require human approval. Liability capped at fees paid in prior 3 months; independent third-party security review available at cost.</em></p>
+      </div>
+
+      <div class="next-step">
+        <div>
+          <b>Next step: align Monday and authorize Week 1.</b>
+          <p>The purpose of Monday’s call is to confirm scope, investment, start date, and the first security/source-of-truth actions.</p>
+        </div>
+        <div class="sig">jason@meta57.xyz · Alacrity One</div>
+      </div>
+
+      <div class="footer">
+        <span>jason@meta57.xyz · Alacrity One</span>
+        <span>Page 2 of 2</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
